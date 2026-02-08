@@ -48,6 +48,7 @@
       font-size: clamp(14px, 2.4vw, 18px);
       opacity:.9;
     }
+
     .art{
       width:min(520px, 92%);
       margin: 0 auto 18px;
@@ -108,31 +109,32 @@
       border: 2px solid rgba(11,42,122,.25);
       background: rgba(255,255,255,.45);
     }
+
     .hint{
       margin-top: 10px;
       font-size: 13px;
       opacity: .75;
     }
 
-    /* MOBILE: keep both visible, stacked; NO is untouchable */
+    /* MOBILE: YES centered; NO will be moved by JS within this area */
     @media (max-width: 520px){
-      .buttons{
-        height: 150px;
-      }
+      .buttons{ height: 160px; }
+
       #yes{
         left: 50%;
         top: 40%;
         transform: translate(-50%, -50%);
       }
+
+      /* Allow JS to position NO by left/top */
       #no{
-        left: 50%;
-        top: 80%;
         right: auto;
-        transform: translate(-50%, -50%);
       }
+
+      /* Make NO untouchable on mobile, but still visible */
       body.mobile-mode #no{
-        pointer-events: none;  /* untouchable but visible */
-        opacity: 0.95;        /* still clearly visible */
+        pointer-events: none;
+        opacity: 0.98;
       }
     }
   </style>
@@ -141,7 +143,7 @@
   <main class="wrap">
     <section class="card" aria-live="polite">
       <div class="art" aria-label="A cupid pig riding a plunger of love with champagne and a cigarette (cartoon)">
-        <!-- (Same embedded SVG as before) -->
+        <!-- Same embedded SVG (unchanged) -->
         <svg viewBox="0 0 900 520" width="100%" height="auto" role="img">
           <defs>
             <linearGradient id="wing" x1="0" x2="1">
@@ -232,7 +234,7 @@
       <h1><span>will you be my valentine?</span></h1>
       <p class="sub">Choose wisely 😇</p>
 
-      <div class="buttons">
+      <div class="buttons" id="buttons">
         <button id="yes" type="button">YES</button>
         <button id="no" type="button" aria-label="No (not allowed)">NO</button>
       </div>
@@ -249,17 +251,31 @@
     const yes = document.getElementById("yes");
     const no  = document.getElementById("no");
     const result = document.getElementById("result");
-    const buttons = document.querySelector(".buttons");
+    const buttons = document.getElementById("buttons");
 
     const mqMobile = window.matchMedia("(max-width: 520px)");
-    function setMode(){
-      document.body.classList.toggle("mobile-mode", mqMobile.matches);
-    }
-    setMode();
-    mqMobile.addEventListener?.("change", setMode);
-    window.addEventListener("resize", setMode);
+    let mobileTimer = null;
 
-    // ===== Desktop behavior (unchanged) =====
+    function setMode() {
+      const isMobile = mqMobile.matches;
+      document.body.classList.toggle("mobile-mode", isMobile);
+
+      // Clean up when switching modes
+      if (!isMobile) {
+        if (mobileTimer) clearInterval(mobileTimer);
+        mobileTimer = null;
+
+        // Reset NO back to desktop default state
+        no.style.left = "";
+        no.style.top = "";
+        no.style.right = "18px";
+        no.style.transform = "translateY(-50%)";
+      } else {
+        startMobileNoWiggle();
+      }
+    }
+
+    // ===== Desktop behavior (UNCHANGED) =====
     function moveNoAwayDesktop() {
       const rect = buttons.getBoundingClientRect();
       const padding = 10;
@@ -288,24 +304,101 @@
         yes.focus({ preventScroll: true });
         moveNoAwayDesktop();
       } else {
-        // On mobile, never let NO be focusable
         yes.focus({ preventScroll: true });
       }
     });
 
-    // On mobile: if they tap where NO is, route it to YES.
-    // (pointer-events: none prevents the button from receiving the tap,
-    // so we capture taps on the buttons container and redirect if near NO.)
+    // YES click reveals the message
+    yes.addEventListener("click", () => {
+      result.style.display = "block";
+      buttons.style.display = "none";
+    });
+
+    // ===== Mobile behavior: NO stays visible, moves around, never overlaps YES =====
+    function rectsOverlap(a, b, pad = 10) {
+      return !(
+        a.right + pad < b.left ||
+        a.left > b.right + pad ||
+        a.bottom + pad < b.top ||
+        a.top > b.bottom + pad
+      );
+    }
+
+    function placeNoMobile() {
+      const br = buttons.getBoundingClientRect();
+      const yr = yes.getBoundingClientRect();
+
+      const pad = 8;
+
+      // Bounds inside the button container
+      const minX = pad;
+      const minY = pad;
+      const maxX = br.width  - no.offsetWidth  - pad;
+      const maxY = br.height - no.offsetHeight - pad;
+
+      // If for some reason bounds are tiny, just put it lower than YES
+      if (maxX < minX || maxY < minY) {
+        no.style.right = "auto";
+        no.style.transform = "translate(-50%, -50%)";
+        no.style.left = "50%";
+        no.style.top = "85%";
+        return;
+      }
+
+      // Try multiple random positions that DON'T overlap YES
+      let best = { x: maxX, y: maxY };
+      for (let i = 0; i < 25; i++) {
+        const x = minX + Math.random() * (maxX - minX);
+        const y = minY + Math.random() * (maxY - minY);
+
+        // Temporarily set NO to get its rect in the right place
+        no.style.right = "auto";
+        no.style.transform = "none";
+        no.style.left = x + "px";
+        no.style.top  = y + "px";
+
+        const nr = no.getBoundingClientRect();
+
+        // Must not overlap YES, and should prefer being a bit away from center
+        if (!rectsOverlap(nr, yr, 16)) {
+          return; // success
+        } else {
+          best = { x, y };
+        }
+      }
+
+      // Fallback: put NO below YES (still visible and not overlapping)
+      no.style.right = "auto";
+      no.style.transform = "translate(-50%, -50%)";
+      no.style.left = "50%";
+      no.style.top = "85%";
+    }
+
+    function startMobileNoWiggle() {
+      if (mobileTimer) return;
+
+      // Ensure YES is centered like your mobile CSS expects
+      // Then position NO somewhere safe immediately
+      placeNoMobile();
+
+      // Move NO periodically (visible, but always dodging YES)
+      mobileTimer = setInterval(() => {
+        if (!document.body.classList.contains("mobile-mode")) return;
+        placeNoMobile();
+      }, 650);
+    }
+
+    // If they tap where NO is (even though it's untouchable), route to YES
     buttons.addEventListener("touchstart", (e) => {
       if (!document.body.classList.contains("mobile-mode")) return;
 
       const t = e.touches[0];
-      const noRect = no.getBoundingClientRect();
+      const nr = no.getBoundingClientRect();
       const x = t.clientX, y = t.clientY;
 
       const insideNo =
-        x >= noRect.left && x <= noRect.right &&
-        y >= noRect.top  && y <= noRect.bottom;
+        x >= nr.left && x <= nr.right &&
+        y >= nr.top  && y <= nr.bottom;
 
       if (insideNo) {
         e.preventDefault();
@@ -313,10 +406,11 @@
       }
     }, { passive: false });
 
-    // YES click reveals the message
-    yes.addEventListener("click", () => {
-      result.style.display = "block";
-      buttons.style.display = "none";
+    // Apply mode on load + changes
+    setMode();
+    mqMobile.addEventListener?.("change", setMode);
+    window.addEventListener("resize", () => {
+      if (document.body.classList.contains("mobile-mode")) placeNoMobile();
     });
 
     // Initial placement for desktop
