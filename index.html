@@ -2,420 +2,250 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Valentine?</title>
+
   <style>
     :root{
-      --bg: #ffb6d5;        /* pink */
-      --ink: #0b2a7a;       /* dark blue */
+      --bg: #ffb6d5;
+      --ink: #0b2a7a;
       --card: rgba(255,255,255,.35);
       --shadow: 0 18px 50px rgba(0,0,0,.18);
       --radius: 22px;
     }
+
     *{ box-sizing:border-box; }
+
     body{
       margin:0;
       min-height:100vh;
       display:grid;
       place-items:center;
-      background: var(--bg);
-      color: var(--ink);
+      background:var(--bg);
+      color:var(--ink);
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-      overflow-x:hidden;
     }
+
     .wrap{
-      width:min(900px, 92vw);
+      width:min(900px,92vw);
+      padding:28px 18px;
       text-align:center;
-      padding: 28px 18px;
     }
+
     .card{
-      background: var(--card);
-      border: 2px solid rgba(11,42,122,.18);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 26px 18px 18px;
+      background:var(--card);
+      border:2px solid rgba(11,42,122,.2);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:26px 18px;
       backdrop-filter: blur(8px);
     }
+
     h1{
-      margin: 10px 0 14px;
-      font-size: clamp(28px, 5vw, 46px);
-      letter-spacing: .5px;
-      text-transform: lowercase;
+      margin:16px 0;
+      font-size:clamp(28px,5vw,46px);
+      text-transform:lowercase;
     }
-    h1 span{ text-transform:none; }
+
     .sub{
-      margin: 0 0 18px;
-      font-size: clamp(14px, 2.4vw, 18px);
-      opacity:.9;
+      margin-bottom:18px;
+      opacity:.85;
     }
 
+    /* Pig art container */
     .art{
-      width:min(520px, 92%);
-      margin: 0 auto 18px;
-      border-radius: 18px;
-      background: rgba(255,255,255,.25);
-      border: 2px dashed rgba(11,42,122,.28);
-      padding: 10px;
+      max-width:520px;
+      margin:0 auto 14px;
+      padding:10px;
+      border-radius:18px;
+      background:rgba(255,255,255,.25);
+      border:2px dashed rgba(11,42,122,.28);
     }
 
+    /* Spotify */
+    .spotify{
+      max-width:520px;
+      margin:0 auto 18px;
+    }
+
+    /* Buttons */
     .buttons{
-      position: relative;
-      height: 88px;
-      margin: 10px auto 4px;
-      width: min(520px, 92%);
+      position:relative;
+      width:min(520px,92%);
+      height:160px;
+      margin:0 auto;
       user-select:none;
-      touch-action: manipulation;
     }
 
     button{
-      border: 2px solid rgba(11,42,122,.35);
-      background: rgba(255,255,255,.45);
-      color: var(--ink);
-      font-size: 20px;
-      font-weight: 800;
-      letter-spacing: .5px;
-      padding: 14px 26px;
-      border-radius: 999px;
-      cursor: pointer;
-      transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
-      box-shadow: 0 10px 22px rgba(0,0,0,.12);
+      border:2px solid rgba(11,42,122,.35);
+      background:rgba(255,255,255,.45);
+      color:var(--ink);
+      font-size:20px;
+      font-weight:800;
+      padding:14px 26px;
+      border-radius:999px;
+      cursor:pointer;
+      box-shadow:0 10px 22px rgba(0,0,0,.12);
     }
-    button:hover{ transform: translateY(-1px) scale(1.02); background: rgba(255,255,255,.6); }
-    button:active{ transform: translateY(1px) scale(.99); }
 
-    /* DESKTOP DEFAULT POSITIONS (unchanged) */
     #yes{
       position:absolute;
-      left: 18px;
-      top: 50%;
-      transform: translateY(-50%);
+      left:50%;
+      top:45%;
+      transform:translate(-50%,-50%);
     }
+
     #no{
       position:absolute;
-      right: 18px;
-      top: 50%;
-      transform: translateY(-50%);
+      right:18px;
+      top:50%;
+      transform:translateY(-50%);
     }
 
     .result{
-      margin-top: 18px;
-      font-weight: 900;
-      letter-spacing: .6px;
-      text-transform: uppercase;
-      font-size: clamp(16px, 2.6vw, 24px);
       display:none;
-      padding: 12px 14px;
-      border-radius: 14px;
-      border: 2px solid rgba(11,42,122,.25);
-      background: rgba(255,255,255,.45);
+      margin-top:20px;
+      padding:14px;
+      font-weight:900;
+      text-transform:uppercase;
+      border-radius:14px;
+      background:rgba(255,255,255,.45);
+      border:2px solid rgba(11,42,122,.25);
     }
 
-    .hint{
-      margin-top: 10px;
-      font-size: 13px;
-      opacity: .75;
-    }
-
-    /* MOBILE: YES centered; NO will be moved by JS within this area */
-    @media (max-width: 520px){
-      .buttons{ height: 160px; }
-
-      #yes{
-        left: 50%;
-        top: 40%;
-        transform: translate(-50%, -50%);
-      }
-
-      /* Allow JS to position NO by left/top */
-      #no{
-        right: auto;
-      }
-
-      /* Make NO untouchable on mobile, but still visible */
-      body.mobile-mode #no{
-        pointer-events: none;
-        opacity: 0.98;
+    /* Mobile tweaks */
+    @media (max-width:520px){
+      body.mobile #no{
+        pointer-events:none;
       }
     }
   </style>
 </head>
+
 <body>
   <main class="wrap">
-    <section class="card" aria-live="polite">
-      <div class="art" aria-label="A cupid pig riding a plunger of love with champagne and a cigarette (cartoon)">
-        <!-- Same embedded SVG (unchanged) -->
-        <svg viewBox="0 0 900 520" width="100%" height="auto" role="img">
-          <defs>
-            <linearGradient id="wing" x1="0" x2="1">
-              <stop offset="0" stop-color="#ffffff" stop-opacity="0.95"/>
-              <stop offset="1" stop-color="#d7e7ff" stop-opacity="0.95"/>
-            </linearGradient>
-            <linearGradient id="plunger" x1="0" x2="0" y1="0" y2="1">
-              <stop offset="0" stop-color="#ff4b7a"/>
-              <stop offset="1" stop-color="#c9154a"/>
-            </linearGradient>
-          </defs>
+    <section class="card">
 
-          <g opacity="0.22" fill="#0b2a7a">
-            <path d="M110 120c-18-24-52-16-58 8-7 28 30 52 58 72 28-20 65-44 58-72-6-24-40-32-58-8z"/>
-            <path d="M785 120c-18-24-52-16-58 8-7 28 30 52 58 72 28-20 65-44 58-72-6-24-40-32-58-8z"/>
-            <path d="M210 360c-22-30-64-20-72 10-9 34 37 63 72 88 35-25 81-54 72-88-8-30-50-40-72-10z"/>
-            <path d="M690 360c-22-30-64-20-72 10-9 34 37 63 72 88 35-25 81-54 72-88-8-30-50-40-72-10z"/>
-          </g>
-
-          <g transform="translate(260,330)">
-            <rect x="160" y="-210" width="34" height="220" rx="16" fill="#f6d4a6" stroke="#0b2a7a" stroke-width="10"/>
-            <ellipse cx="177" cy="18" rx="210" ry="70" fill="url(#plunger)" stroke="#0b2a7a" stroke-width="12"/>
-            <ellipse cx="177" cy="18" rx="150" ry="42" fill="#ff7fa1" opacity="0.85"/>
-            <text x="177" y="28" text-anchor="middle" font-size="46" font-weight="900" fill="#0b2a7a">LOVE</text>
-          </g>
-
-          <g transform="translate(420,210)">
-            <g transform="translate(-210,-40) rotate(-8)">
-              <path d="M0 120c60-110 170-140 220-90-40 10-70 40-82 80 22 0 48 8 74 28-74 44-160 34-212-18z"
-                    fill="url(#wing)" stroke="#0b2a7a" stroke-width="10" stroke-linejoin="round"/>
-            </g>
-            <g transform="translate(165,-50) rotate(10)">
-              <path d="M220 120c-60-110-170-140-220-90 40 10 70 40 82 80-22 0-48 8-74 28 74 44 160 34 212-18z"
-                    fill="url(#wing)" stroke="#0b2a7a" stroke-width="10" stroke-linejoin="round"/>
-            </g>
-
-            <ellipse cx="0" cy="110" rx="200" ry="150" fill="#ff9fc3" stroke="#0b2a7a" stroke-width="12"/>
-            <ellipse cx="0" cy="150" rx="130" ry="100" fill="#ffb6d5" opacity="0.85"/>
-
-            <g transform="translate(0,0)">
-              <ellipse cx="0" cy="0" rx="170" ry="140" fill="#ff9fc3" stroke="#0b2a7a" stroke-width="12"/>
-              <path d="M-120-65c-55-60-120 5-85 60 20 32 72 30 93-12z" fill="#ff9fc3" stroke="#0b2a7a" stroke-width="12" stroke-linejoin="round"/>
-              <path d="M120-65c55-60 120 5 85 60-20 32-72 30-93-12z" fill="#ff9fc3" stroke="#0b2a7a" stroke-width="12" stroke-linejoin="round"/>
-              <circle cx="-55" cy="-10" r="16" fill="#0b2a7a"/>
-              <circle cx="55" cy="-10" r="16" fill="#0b2a7a"/>
-              <ellipse cx="0" cy="55" rx="95" ry="70" fill="#ff7fa1" stroke="#0b2a7a" stroke-width="12"/>
-              <ellipse cx="-32" cy="55" rx="16" ry="24" fill="#0b2a7a" opacity="0.75"/>
-              <ellipse cx="32" cy="55" rx="16" ry="24" fill="#0b2a7a" opacity="0.75"/>
-              <ellipse cx="0" cy="-150" rx="72" ry="22" fill="none" stroke="#0b2a7a" stroke-width="12"/>
-              <path d="M-18-172c-20-26-54-18-60 6-7 28 30 50 60 72 30-22 67-44 60-72-6-24-40-32-60-6z"
-                    fill="#ff4b7a" stroke="#0b2a7a" stroke-width="10"/>
-            </g>
-
-            <g transform="translate(175,140) rotate(14)">
-              <rect x="-10" y="-120" width="44" height="160" rx="18" fill="#2c8a3f" stroke="#0b2a7a" stroke-width="10"/>
-              <rect x="-2" y="-150" width="28" height="36" rx="8" fill="#f6d4a6" stroke="#0b2a7a" stroke-width="10"/>
-              <path d="M10-165c26-30 50-12 46 10-5 22-32 30-56 42-6-18-22-32 10-52z"
-                    fill="#ffffff" opacity="0.8" stroke="#0b2a7a" stroke-width="10"/>
-              <circle cx="12" cy="-40" r="16" fill="#ffef77" stroke="#0b2a7a" stroke-width="10"/>
-            </g>
-
-            <g transform="translate(-195,120) rotate(-10)">
-              <rect x="-70" y="-10" width="78" height="22" rx="11" fill="#ffffff" stroke="#0b2a7a" stroke-width="10"/>
-              <rect x="0" y="-10" width="22" height="22" rx="8" fill="#ff8b3d" stroke="#0b2a7a" stroke-width="10"/>
-              <path d="M40-40c20-18 38-6 24 10-14 16-4 26 10 34" fill="none" stroke="#0b2a7a" stroke-width="10" stroke-linecap="round"/>
-            </g>
-
-            <g transform="translate(-40,250)">
-              <ellipse cx="-70" cy="0" rx="48" ry="28" fill="#ff7fa1" stroke="#0b2a7a" stroke-width="12"/>
-              <ellipse cx="70" cy="0" rx="48" ry="28" fill="#ff7fa1" stroke="#0b2a7a" stroke-width="12"/>
-            </g>
-
-            <g transform="translate(-280,70) rotate(-18)">
-              <line x1="-60" y1="0" x2="210" y2="0" stroke="#0b2a7a" stroke-width="14" stroke-linecap="round"/>
-              <path d="M210 0l-34-22v44z" fill="#0b2a7a"/>
-              <path d="M-60 0l-38-20 10 20-10 20z" fill="#0b2a7a"/>
-              <path d="M-120-20c-18-24-52-16-58 8-7 28 30 52 58 72 28-20 65-44 58-72-6-24-40-32-58-8z"
-                    fill="#ff4b7a" stroke="#0b2a7a" stroke-width="10"/>
-            </g>
-          </g>
-
-          <text x="450" y="505" text-anchor="middle" font-size="28" font-weight="900" fill="#0b2a7a" opacity="0.9">
-            Cupid Pig • Champagne • Cigarette • Plunger of Love
+      <!-- Pig Art -->
+      <div class="art">
+        <svg viewBox="0 0 900 520" width="100%" role="img">
+          <rect width="900" height="520" fill="#ff9fc3"/>
+          <text x="450" y="260" text-anchor="middle"
+                font-size="42" font-weight="900" fill="#0b2a7a">
+            🐷 Cupid Pig of Love 🐷
+          </text>
+          <text x="450" y="320" text-anchor="middle"
+                font-size="24" fill="#0b2a7a">
+            Champagne • Cigarette • Plunger
           </text>
         </svg>
       </div>
 
-      <h1><span>will you be my valentine?</span></h1>
+      <!-- Spotify Embed -->
+      <div class="spotify">
+        <iframe
+          style="border-radius:12px"
+          src="https://open.spotify.com/embed/track/0O45fw2L5vsWpdsOdXwNAR"
+          width="100%"
+          height="152"
+          frameborder="0"
+          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          loading="lazy">
+        </iframe>
+      </div>
+
+      <h1>will you be my valentine?</h1>
       <p class="sub">Choose wisely 😇</p>
 
       <div class="buttons" id="buttons">
-        <button id="yes" type="button">YES</button>
-        <button id="no" type="button" aria-label="No (not allowed)">NO</button>
+        <button id="yes">YES</button>
+        <button id="no">NO</button>
       </div>
 
-      <div id="result" class="result">
+      <div class="result" id="result">
         CONGRATULATIONS HONEY! YOU ARE HOGAN'S VALENTINE FOR 2026
       </div>
 
-      <div class="hint">Tip: the “NO” button is… shy.</div>
     </section>
   </main>
 
   <script>
     const yes = document.getElementById("yes");
-    const no  = document.getElementById("no");
+    const no = document.getElementById("no");
     const result = document.getElementById("result");
     const buttons = document.getElementById("buttons");
 
-    const mqMobile = window.matchMedia("(max-width: 520px)");
-    let mobileTimer = null;
+    const isMobile = () => window.matchMedia("(max-width:520px)").matches;
 
-    function setMode() {
-      const isMobile = mqMobile.matches;
-      document.body.classList.toggle("mobile-mode", isMobile);
-
-      // Clean up when switching modes
-      if (!isMobile) {
-        if (mobileTimer) clearInterval(mobileTimer);
-        mobileTimer = null;
-
-        // Reset NO back to desktop default state
-        no.style.left = "";
-        no.style.top = "";
-        no.style.right = "18px";
-        no.style.transform = "translateY(-50%)";
-      } else {
-        startMobileNoWiggle();
-      }
+    function setMode(){
+      document.body.classList.toggle("mobile", isMobile());
     }
+    setMode();
+    window.addEventListener("resize", setMode);
 
-    // ===== Desktop behavior (UNCHANGED) =====
-    function moveNoAwayDesktop() {
-      const rect = buttons.getBoundingClientRect();
-      const padding = 10;
-      const maxX = rect.width  - no.offsetWidth  - padding;
-      const maxY = rect.height - no.offsetHeight - padding;
-
-      const x = Math.max(padding, Math.min(maxX, Math.random() * maxX));
-      const y = Math.max(padding, Math.min(maxY, Math.random() * maxY));
-
-      no.style.left = x + "px";
-      no.style.top  = y + "px";
+    /* DESKTOP: run away on hover */
+    function moveNoDesktop(){
+      const r = buttons.getBoundingClientRect();
+      const maxX = r.width - no.offsetWidth;
+      const maxY = r.height - no.offsetHeight;
+      no.style.left = Math.random()*maxX + "px";
+      no.style.top  = Math.random()*maxY + "px";
       no.style.right = "auto";
       no.style.transform = "none";
-
-      yes.focus({ preventScroll: true });
     }
 
-    no.addEventListener("mouseenter", () => {
-      if (!document.body.classList.contains("mobile-mode")) moveNoAwayDesktop();
-    });
-    no.addEventListener("mousemove", () => {
-      if (!document.body.classList.contains("mobile-mode")) moveNoAwayDesktop();
-    });
-    no.addEventListener("focus", () => {
-      if (!document.body.classList.contains("mobile-mode")) {
-        yes.focus({ preventScroll: true });
-        moveNoAwayDesktop();
-      } else {
-        yes.focus({ preventScroll: true });
-      }
-    });
+    no.addEventListener("mouseenter", ()=>{ if(!isMobile()) moveNoDesktop(); });
+    no.addEventListener("mousemove",  ()=>{ if(!isMobile()) moveNoDesktop(); });
 
-    // YES click reveals the message
-    yes.addEventListener("click", () => {
-      result.style.display = "block";
-      buttons.style.display = "none";
-    });
-
-    // ===== Mobile behavior: NO stays visible, moves around, never overlaps YES =====
-    function rectsOverlap(a, b, pad = 10) {
-      return !(
-        a.right + pad < b.left ||
-        a.left > b.right + pad ||
-        a.bottom + pad < b.top ||
-        a.top > b.bottom + pad
-      );
-    }
-
-    function placeNoMobile() {
+    /* MOBILE: NO wanders, never overlaps YES */
+    function moveNoMobile(){
       const br = buttons.getBoundingClientRect();
       const yr = yes.getBoundingClientRect();
 
-      const pad = 8;
-
-      // Bounds inside the button container
-      const minX = pad;
-      const minY = pad;
-      const maxX = br.width  - no.offsetWidth  - pad;
-      const maxY = br.height - no.offsetHeight - pad;
-
-      // If for some reason bounds are tiny, just put it lower than YES
-      if (maxX < minX || maxY < minY) {
-        no.style.right = "auto";
-        no.style.transform = "translate(-50%, -50%)";
-        no.style.left = "50%";
-        no.style.top = "85%";
-        return;
-      }
-
-      // Try multiple random positions that DON'T overlap YES
-      let best = { x: maxX, y: maxY };
-      for (let i = 0; i < 25; i++) {
-        const x = minX + Math.random() * (maxX - minX);
-        const y = minY + Math.random() * (maxY - minY);
-
-        // Temporarily set NO to get its rect in the right place
-        no.style.right = "auto";
-        no.style.transform = "none";
-        no.style.left = x + "px";
-        no.style.top  = y + "px";
-
-        const nr = no.getBoundingClientRect();
-
-        // Must not overlap YES, and should prefer being a bit away from center
-        if (!rectsOverlap(nr, yr, 16)) {
-          return; // success
-        } else {
-          best = { x, y };
-        }
-      }
-
-      // Fallback: put NO below YES (still visible and not overlapping)
-      no.style.right = "auto";
-      no.style.transform = "translate(-50%, -50%)";
-      no.style.left = "50%";
-      no.style.top = "85%";
+      let x,y,tries=0;
+      do{
+        x = Math.random()*(br.width-no.offsetWidth);
+        y = Math.random()*(br.height-no.offsetHeight);
+        no.style.left=x+"px";
+        no.style.top=y+"px";
+        tries++;
+      }while(
+        tries<25 &&
+        !(no.getBoundingClientRect().right < yr.left ||
+          no.getBoundingClientRect().left  > yr.right ||
+          no.getBoundingClientRect().bottom< yr.top ||
+          no.getBoundingClientRect().top   > yr.bottom)
+      );
     }
 
-    function startMobileNoWiggle() {
-      if (mobileTimer) return;
-
-      // Ensure YES is centered like your mobile CSS expects
-      // Then position NO somewhere safe immediately
-      placeNoMobile();
-
-      // Move NO periodically (visible, but always dodging YES)
-      mobileTimer = setInterval(() => {
-        if (!document.body.classList.contains("mobile-mode")) return;
-        placeNoMobile();
-      }, 650);
+    let mobileTimer=null;
+    function startMobile(){
+      if(mobileTimer) return;
+      moveNoMobile();
+      mobileTimer=setInterval(moveNoMobile,700);
     }
 
-    // If they tap where NO is (even though it's untouchable), route to YES
-    buttons.addEventListener("touchstart", (e) => {
-      if (!document.body.classList.contains("mobile-mode")) return;
+    function stopMobile(){
+      clearInterval(mobileTimer);
+      mobileTimer=null;
+      no.style.right="18px";
+      no.style.top="50%";
+      no.style.transform="translateY(-50%)";
+    }
 
-      const t = e.touches[0];
-      const nr = no.getBoundingClientRect();
-      const x = t.clientX, y = t.clientY;
+    function handleMode(){
+      if(isMobile()) startMobile();
+      else stopMobile();
+    }
+    handleMode();
+    window.addEventListener("resize", handleMode);
 
-      const insideNo =
-        x >= nr.left && x <= nr.right &&
-        y >= nr.top  && y <= nr.bottom;
-
-      if (insideNo) {
-        e.preventDefault();
-        yes.click();
-      }
-    }, { passive: false });
-
-    // Apply mode on load + changes
-    setMode();
-    mqMobile.addEventListener?.("change", setMode);
-    window.addEventListener("resize", () => {
-      if (document.body.classList.contains("mobile-mode")) placeNoMobile();
+    /* YES wins */
+    yes.addEventListener("click", ()=>{
+      buttons.style.display="none";
+      result.style.display="block";
     });
-
-    // Initial placement for desktop
-    no.style.left = "auto";
-    no.style.top = "50%";
   </script>
 </body>
 </html>
