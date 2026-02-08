@@ -21,6 +21,7 @@
       background: var(--bg);
       color: var(--ink);
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      overflow-x:hidden;
     }
     .wrap{
       width:min(900px, 92vw);
@@ -87,6 +88,7 @@
     button:hover{ transform: translateY(-1px) scale(1.02); background: rgba(255,255,255,.6); }
     button:active{ transform: translateY(1px) scale(.99); }
 
+    /* DESKTOP DEFAULT POSITIONS (UNCHANGED) */
     #no{
       position:absolute; /* so it can “run away” */
       right: 18px;
@@ -119,11 +121,21 @@
       opacity: .75;
     }
 
-    /* Make it feel “locked in” on mobile too */
+    /* MOBILE LAYOUT ONLY (YES centered; NO handled by JS to float) */
     @media (max-width: 520px){
       .buttons{ height: 120px; }
       #yes{ left: 50%; transform: translate(-50%,-50%); }
-      #no{ top: 86%; right: 50%; transform: translate(50%,-50%); }
+      /* Let JS take over NO positioning; prevent the old media rule from parking it on YES */
+      #no{ right: auto; }
+    }
+
+    /* When in mobile mode, NO becomes untouchable and floats (JS sets position/fixed coords) */
+    body.mobile-mode #no{
+      pointer-events: none;          /* you can never touch it */
+      position: fixed !important;    /* float over the whole page */
+      z-index: 9999;
+      transform: none !important;
+      opacity: 0.98;
     }
   </style>
 </head>
@@ -144,7 +156,6 @@
             </linearGradient>
           </defs>
 
-          <!-- background hearts -->
           <g opacity="0.22" fill="#0b2a7a">
             <path d="M110 120c-18-24-52-16-58 8-7 28 30 52 58 72 28-20 65-44 58-72-6-24-40-32-58-8z"/>
             <path d="M785 120c-18-24-52-16-58 8-7 28 30 52 58 72 28-20 65-44 58-72-6-24-40-32-58-8z"/>
@@ -152,7 +163,6 @@
             <path d="M690 360c-22-30-64-20-72 10-9 34 37 63 72 88 35-25 81-54 72-88-8-30-50-40-72-10z"/>
           </g>
 
-          <!-- plunger of love -->
           <g transform="translate(260,330)">
             <rect x="160" y="-210" width="34" height="220" rx="16" fill="#f6d4a6" stroke="#0b2a7a" stroke-width="10"/>
             <ellipse cx="177" cy="18" rx="210" ry="70" fill="url(#plunger)" stroke="#0b2a7a" stroke-width="12"/>
@@ -160,9 +170,7 @@
             <text x="177" y="28" text-anchor="middle" font-size="46" font-weight="900" fill="#0b2a7a">LOVE</text>
           </g>
 
-          <!-- pig body -->
           <g transform="translate(420,210)">
-            <!-- wings -->
             <g transform="translate(-210,-40) rotate(-8)">
               <path d="M0 120c60-110 170-140 220-90-40 10-70 40-82 80 22 0 48 8 74 28-74 44-160 34-212-18z"
                     fill="url(#wing)" stroke="#0b2a7a" stroke-width="10" stroke-linejoin="round"/>
@@ -172,33 +180,23 @@
                     fill="url(#wing)" stroke="#0b2a7a" stroke-width="10" stroke-linejoin="round"/>
             </g>
 
-            <!-- body -->
             <ellipse cx="0" cy="110" rx="200" ry="150" fill="#ff9fc3" stroke="#0b2a7a" stroke-width="12"/>
             <ellipse cx="0" cy="150" rx="130" ry="100" fill="#ffb6d5" opacity="0.85"/>
 
-            <!-- head -->
             <g transform="translate(0,0)">
               <ellipse cx="0" cy="0" rx="170" ry="140" fill="#ff9fc3" stroke="#0b2a7a" stroke-width="12"/>
-              <!-- ears -->
               <path d="M-120-65c-55-60-120 5-85 60 20 32 72 30 93-12z" fill="#ff9fc3" stroke="#0b2a7a" stroke-width="12" stroke-linejoin="round"/>
               <path d="M120-65c55-60 120 5 85 60-20 32-72 30-93-12z" fill="#ff9fc3" stroke="#0b2a7a" stroke-width="12" stroke-linejoin="round"/>
-
-              <!-- eyes -->
               <circle cx="-55" cy="-10" r="16" fill="#0b2a7a"/>
               <circle cx="55" cy="-10" r="16" fill="#0b2a7a"/>
-
-              <!-- snout -->
               <ellipse cx="0" cy="55" rx="95" ry="70" fill="#ff7fa1" stroke="#0b2a7a" stroke-width="12"/>
               <ellipse cx="-32" cy="55" rx="16" ry="24" fill="#0b2a7a" opacity="0.75"/>
               <ellipse cx="32" cy="55" rx="16" ry="24" fill="#0b2a7a" opacity="0.75"/>
-
-              <!-- cupid halo -->
               <ellipse cx="0" cy="-150" rx="72" ry="22" fill="none" stroke="#0b2a7a" stroke-width="12"/>
               <path d="M-18-172c-20-26-54-18-60 6-7 28 30 50 60 72 30-22 67-44 60-72-6-24-40-32-60-6z"
                     fill="#ff4b7a" stroke="#0b2a7a" stroke-width="10"/>
             </g>
 
-            <!-- champagne bottle -->
             <g transform="translate(175,140) rotate(14)">
               <rect x="-10" y="-120" width="44" height="160" rx="18" fill="#2c8a3f" stroke="#0b2a7a" stroke-width="10"/>
               <rect x="-2" y="-150" width="28" height="36" rx="8" fill="#f6d4a6" stroke="#0b2a7a" stroke-width="10"/>
@@ -207,20 +205,17 @@
               <circle cx="12" cy="-40" r="16" fill="#ffef77" stroke="#0b2a7a" stroke-width="10"/>
             </g>
 
-            <!-- cigarette + tiny smoke -->
             <g transform="translate(-195,120) rotate(-10)">
               <rect x="-70" y="-10" width="78" height="22" rx="11" fill="#ffffff" stroke="#0b2a7a" stroke-width="10"/>
               <rect x="0" y="-10" width="22" height="22" rx="8" fill="#ff8b3d" stroke="#0b2a7a" stroke-width="10"/>
               <path d="M40-40c20-18 38-6 24 10-14 16-4 26 10 34" fill="none" stroke="#0b2a7a" stroke-width="10" stroke-linecap="round"/>
             </g>
 
-            <!-- feet on plunger -->
             <g transform="translate(-40,250)">
               <ellipse cx="-70" cy="0" rx="48" ry="28" fill="#ff7fa1" stroke="#0b2a7a" stroke-width="12"/>
               <ellipse cx="70" cy="0" rx="48" ry="28" fill="#ff7fa1" stroke="#0b2a7a" stroke-width="12"/>
             </g>
 
-            <!-- arrow -->
             <g transform="translate(-280,70) rotate(-18)">
               <line x1="-60" y1="0" x2="210" y2="0" stroke="#0b2a7a" stroke-width="14" stroke-linecap="round"/>
               <path d="M210 0l-34-22v44z" fill="#0b2a7a"/>
@@ -258,22 +253,14 @@
     const result = document.getElementById("result");
     const buttons = document.querySelector(".buttons");
 
-    function centerCursorOnYes() {
-      // Visually “steer” interaction toward YES:
-      yes.classList.add("hovered");
-    }
-
-    function moveNoAway(e) {
-      // Keep NO from being clicked; make it run away within the button container.
+    // ===== Desktop behavior (UNCHANGED) =====
+    function moveNoAwayDesktop() {
       const rect = buttons.getBoundingClientRect();
 
-      // Prefer moving toward the YES side to satisfy: "When cursor goes over 'no', it automatically moves over to 'yes'."
-      // We do that by relocating NO toward the far edge and nudging focus to YES.
       const padding = 10;
       const maxX = rect.width  - no.offsetWidth  - padding;
       const maxY = rect.height - no.offsetHeight - padding;
 
-      // Random but biased away from current pointer
       const x = Math.max(padding, Math.min(maxX, Math.random() * maxX));
       const y = Math.max(padding, Math.min(maxY, Math.random() * maxY));
 
@@ -282,37 +269,121 @@
       no.style.right = "auto";
       no.style.transform = "none";
 
-      // Send attention to YES
       yes.focus({ preventScroll: true });
     }
 
-    // Desktop: as soon as you approach NO, it escapes and YES gets focus.
-    no.addEventListener("mouseenter", moveNoAway);
-    no.addEventListener("mousemove", moveNoAway);
+    // Desktop: NO runs away on hover/mouse move
+    no.addEventListener("mouseenter", (e) => {
+      if (!document.body.classList.contains("mobile-mode")) moveNoAwayDesktop(e);
+    });
+    no.addEventListener("mousemove", (e) => {
+      if (!document.body.classList.contains("mobile-mode")) moveNoAwayDesktop(e);
+    });
 
-    // Mobile/touch: block NO and “redirect” to YES.
+    // Mobile/touch: redirect NO taps to YES (kept, but NO will be untouchable anyway)
     no.addEventListener("touchstart", (e) => {
-      e.preventDefault();
-      yes.click();
+      if (!document.body.classList.contains("mobile-mode")) {
+        e.preventDefault();
+        yes.click();
+      }
     }, { passive: false });
 
-    // Prevent keyboard users from selecting NO as well.
+    // Prevent keyboard focus on NO (desktop accessibility)
     no.addEventListener("focus", () => {
-      yes.focus({ preventScroll: true });
-      moveNoAway();
+      if (!document.body.classList.contains("mobile-mode")) {
+        yes.focus({ preventScroll: true });
+        moveNoAwayDesktop();
+      }
     });
 
     // YES click reveals the message
     yes.addEventListener("click", () => {
       result.style.display = "block";
-      // Optional: hide buttons after success
       buttons.style.display = "none";
     });
 
-    // Initial placement so it looks nice
-    // (NO starts on the right; it will run away on hover)
+    // ===== Mobile behavior (new) =====
+    const mqMobile = window.matchMedia("(max-width: 520px)");
+
+    let animId = null;
+    let vx = 2.2, vy = 2.0; // speed
+    let x = 20, y = 120;    // start
+
+    function placeNoFixed(nx, ny) {
+      no.style.left = nx + "px";
+      no.style.top  = ny + "px";
+      no.style.right = "auto";
+    }
+
+    function startMobileFloat() {
+      document.body.classList.add("mobile-mode");
+
+      // Make sure NO is measurable before starting
+      const w = Math.max(no.offsetWidth, 90);
+      const h = Math.max(no.offsetHeight, 44);
+
+      // Start near upper-right-ish but not on top of content
+      x = Math.max(10, Math.min(window.innerWidth - w - 10, window.innerWidth * 0.65));
+      y = Math.max(10, Math.min(window.innerHeight - h - 10, window.innerHeight * 0.25));
+      placeNoFixed(x, y);
+
+      // Float/bounce within the viewport, with safe margins
+      const margin = 10;
+
+      function tick() {
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+
+        const bw = Math.max(no.offsetWidth, w);
+        const bh = Math.max(no.offsetHeight, h);
+
+        x += vx;
+        y += vy;
+
+        // Bounce off edges
+        if (x <= margin) { x = margin; vx *= -1; }
+        if (y <= margin) { y = margin; vy *= -1; }
+        if (x >= vw - bw - margin) { x = vw - bw - margin; vx *= -1; }
+        if (y >= vh - bh - margin) { y = vh - bh - margin; vy *= -1; }
+
+        placeNoFixed(x, y);
+        animId = requestAnimationFrame(tick);
+      }
+
+      cancelAnimationFrame(animId);
+      animId = requestAnimationFrame(tick);
+    }
+
+    function stopMobileFloat() {
+      document.body.classList.remove("mobile-mode");
+      cancelAnimationFrame(animId);
+      animId = null;
+
+      // Reset to original desktop positions
+      no.style.position = "";
+      no.style.left = "";
+      no.style.top = "";
+      no.style.right = "18px";
+      no.style.transform = "translateY(-50%)";
+    }
+
+    function applyMode() {
+      if (mqMobile.matches) startMobileFloat();
+      else stopMobileFloat();
+    }
+
+    // Run at load + on resize/orientation changes
+    applyMode();
+    mqMobile.addEventListener?.("change", applyMode);
+    window.addEventListener("resize", () => {
+      // If mobile, keep it inside bounds after rotation
+      if (mqMobile.matches) startMobileFloat();
+    });
+
+    // Initial placement for desktop (unchanged)
     no.style.left = "auto";
     no.style.top = "50%";
   </script>
 </body>
 </html>
+
