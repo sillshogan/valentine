@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Valentine?</title>
+  <style>
+    :root{
+      --bg: #ffb6d5;        /* pink */
+      --ink: #0b2a7a;       /* dark blue */
+      --card: rgba(255,255,255,.35);
+      --shadow: 0 18px 50px rgba(0,0,0,.18);
+      --radius: 22px;
+    }
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      min-height:100vh;
+      display:grid;
+      place-items:center;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+    }
+    .wrap{
+      width:min(900px, 92vw);
+      text-align:center;
+      padding: 28px 18px;
+    }
+    .card{
+      background: var(--card);
+      border: 2px solid rgba(11,42,122,.18);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 26px 18px 18px;
+      backdrop-filter: blur(8px);
+    }
+    h1{
+      margin: 10px 0 14px;
+      font-size: clamp(28px, 5vw, 46px);
+      letter-spacing: .5px;
+      text-transform: lowercase;
+    }
+    h1 span{ text-transform:none; }
+    .sub{
+      margin: 0 0 18px;
+      font-size: clamp(14px, 2.4vw, 18px);
+      opacity:.9;
+    }
+
+    /* Cupid pig “image” */
+    .art{
+      width:min(520px, 92%);
+      margin: 0 auto 18px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.25);
+      border: 2px dashed rgba(11,42,122,.28);
+      padding: 10px;
+    }
+
+    .buttons{
+      position: relative;
+      height: 88px;
+      margin: 10px auto 4px;
+      width: min(520px, 92%);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap: 18px;
+      user-select:none;
+      touch-action: manipulation;
+    }
+
+    button{
+      border: 2px solid rgba(11,42,122,.35);
+      background: rgba(255,255,255,.45);
+      color: var(--ink);
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: .5px;
+      padding: 14px 26px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
+      box-shadow: 0 10px 22px rgba(0,0,0,.12);
+    }
+    button:hover{ transform: translateY(-1px) scale(1.02); background: rgba(255,255,255,.6); }
+    button:active{ transform: translateY(1px) scale(.99); }
+
+    #no{
+      position:absolute; /* so it can “run away” */
+      right: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    #yes{
+      position:absolute;
+      left: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .result{
+      margin-top: 18px;
+      font-weight: 900;
+      letter-spacing: .6px;
+      text-transform: uppercase;
+      font-size: clamp(16px, 2.6vw, 24px);
+      display:none;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 2px solid rgba(11,42,122,.25);
+      background: rgba(255,255,255,.45);
+    }
+
+    .hint{
+      margin-top: 10px;
+      font-size: 13px;
+      opacity: .75;
+    }
+
+    /* Make it feel “locked in” on mobile too */
+    @media (max-width: 520px){
+      .buttons{ height: 120px; }
+      #yes{ left: 50%; transform: translate(-50%,-50%); }
+      #no{ top: 86%; right: 50%; transform: translate(50%,-50%); }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="card" aria-live="polite">
+      <div class="art" aria-label="A cupid pig riding a plunger of love with champagne and a cigarette (cartoon)">
+        <!-- Hand-drawn SVG “cupid pig” illustration (embedded, no external image needed) -->
+        <svg viewBox="0 0 900 520" width="100%" height="auto" role="img">
+          <defs>
+            <linearGradient id="wing" x1="0" x2="1">
+              <stop offset="0" stop-color="#ffffff" stop-opacity="0.95"/>
+              <stop offset="1" stop-color="#d7e7ff" stop-opacity="0.95"/>
+            </linearGradient>
+            <linearGradient id="plunger" x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0" stop-color="#ff4b7a"/>
+              <stop offset="1" stop-color="#c9154a"/>
+            </linearGradient>
+          </defs>
+
+          <!-- background hearts -->
+          <g opacity="0.22" fill="#0b2a7a">
+            <path d="M110 120c-18-24-52-16-58 8-7 28 30 52 58 72 28-20 65-44 58-72-6-24-40-32-58-8z"/>
+            <path d="M785 120c-18-24-52-16-58 8-7 28 30 52 58 72 28-20 65-44 58-72-6-24-40-32-58-8z"/>
+            <path d="M210 360c-22-30-64-20-72 10-9 34 37 63 72 88 35-25 81-54 72-88-8-30-50-40-72-10z"/>
+            <path d="M690 360c-22-30-64-20-72 10-9 34 37 63 72 88 35-25 81-54 72-88-8-30-50-40-72-10z"/>
+          </g>
+
+          <!-- plunger of love -->
+          <g transform="translate(260,330)">
+            <rect x="160" y="-210" width="34" height="220" rx="16" fill="#f6d4a6" stroke="#0b2a7a" stroke-width="10"/>
+            <ellipse cx="177" cy="18" rx="210" ry="70" fill="url(#plunger)" stroke="#0b2a7a" stroke-width="12"/>
+            <ellipse cx="177" cy="18" rx="150" ry="42" fill="#ff7fa1" opacity="0.85"/>
+            <text x="177" y="28" text-anchor="middle" font-size="46" font-weight="900" fill="#0b2a7a">LOVE</text>
+          </g>
+
+          <!-- pig body -->
+          <g transform="translate(420,210)">
+            <!-- wings -->
+            <g transform="translate(-210,-40) rotate(-8)">
+              <path d="M0 120c60-110 170-140 220-90-40 10-70 40-82 80 22 0 48 8 74 28-74 44-160 34-212-18z"
+                    fill="url(#wing)" stroke="#0b2a7a" stroke-width="10" stroke-linejoin="round"/>
+            </g>
+            <g transform="translate(165,-50) rotate(10)">
+              <path d="M220 120c-60-110-170-140-220-90 40 10 70 40 82 80-22 0-48 8-74 28 74 44 160 34 212-18z"
+                    fill="url(#wing)" stroke="#0b2a7a" stroke-width="10" stroke-linejoin="round"/>
+            </g>
+
+            <!-- body -->
+            <ellipse cx="0" cy="110" rx="200" ry="150" fill="#ff9fc3" stroke="#0b2a7a" stroke-width="12"/>
+            <ellipse cx="0" cy="150" rx="130" ry="100" fill="#ffb6d5" opacity="0.85"/>
+
+            <!-- head -->
+            <g transform="translate(0,0)">
+              <ellipse cx="0" cy="0" rx="170" ry="140" fill="#ff9fc3" stroke="#0b2a7a" stroke-width="12"/>
+              <!-- ears -->
+              <path d="M-120-65c-55-60-120 5-85 60 20 32 72 30 93-12z" fill="#ff9fc3" stroke="#0b2a7a" stroke-width="12" stroke-linejoin="round"/>
+              <path d="M120-65c55-60 120 5 85 60-20 32-72 30-93-12z" fill="#ff9fc3" stroke="#0b2a7a" stroke-width="12" stroke-linejoin="round"/>
+
+              <!-- eyes -->
+              <circle cx="-55" cy="-10" r="16" fill="#0b2a7a"/>
+              <circle cx="55" cy="-10" r="16" fill="#0b2a7a"/>
+
+              <!-- snout -->
+              <ellipse cx="0" cy="55" rx="95" ry="70" fill="#ff7fa1" stroke="#0b2a7a" stroke-width="12"/>
+              <ellipse cx="-32" cy="55" rx="16" ry="24" fill="#0b2a7a" opacity="0.75"/>
+              <ellipse cx="32" cy="55" rx="16" ry="24" fill="#0b2a7a" opacity="0.75"/>
+
+              <!-- cupid halo -->
+              <ellipse cx="0" cy="-150" rx="72" ry="22" fill="none" stroke="#0b2a7a" stroke-width="12"/>
+              <path d="M-18-172c-20-26-54-18-60 6-7 28 30 50 60 72 30-22 67-44 60-72-6-24-40-32-60-6z"
+                    fill="#ff4b7a" stroke="#0b2a7a" stroke-width="10"/>
+            </g>
+
+            <!-- champagne bottle -->
+            <g transform="translate(175,140) rotate(14)">
+              <rect x="-10" y="-120" width="44" height="160" rx="18" fill="#2c8a3f" stroke="#0b2a7a" stroke-width="10"/>
+              <rect x="-2" y="-150" width="28" height="36" rx="8" fill="#f6d4a6" stroke="#0b2a7a" stroke-width="10"/>
+              <path d="M10-165c26-30 50-12 46 10-5 22-32 30-56 42-6-18-22-32 10-52z"
+                    fill="#ffffff" opacity="0.8" stroke="#0b2a7a" stroke-width="10"/>
+              <circle cx="12" cy="-40" r="16" fill="#ffef77" stroke="#0b2a7a" stroke-width="10"/>
+            </g>
+
+            <!-- cigarette + tiny smoke -->
+            <g transform="translate(-195,120) rotate(-10)">
+              <rect x="-70" y="-10" width="78" height="22" rx="11" fill="#ffffff" stroke="#0b2a7a" stroke-width="10"/>
+              <rect x="0" y="-10" width="22" height="22" rx="8" fill="#ff8b3d" stroke="#0b2a7a" stroke-width="10"/>
+              <path d="M40-40c20-18 38-6 24 10-14 16-4 26 10 34" fill="none" stroke="#0b2a7a" stroke-width="10" stroke-linecap="round"/>
+            </g>
+
+            <!-- feet on plunger -->
+            <g transform="translate(-40,250)">
+              <ellipse cx="-70" cy="0" rx="48" ry="28" fill="#ff7fa1" stroke="#0b2a7a" stroke-width="12"/>
+              <ellipse cx="70" cy="0" rx="48" ry="28" fill="#ff7fa1" stroke="#0b2a7a" stroke-width="12"/>
+            </g>
+
+            <!-- arrow -->
+            <g transform="translate(-280,70) rotate(-18)">
+              <line x1="-60" y1="0" x2="210" y2="0" stroke="#0b2a7a" stroke-width="14" stroke-linecap="round"/>
+              <path d="M210 0l-34-22v44z" fill="#0b2a7a"/>
+              <path d="M-60 0l-38-20 10 20-10 20z" fill="#0b2a7a"/>
+              <path d="M-120-20c-18-24-52-16-58 8-7 28 30 52 58 72 28-20 65-44 58-72-6-24-40-32-58-8z"
+                    fill="#ff4b7a" stroke="#0b2a7a" stroke-width="10"/>
+            </g>
+          </g>
+
+          <text x="450" y="505" text-anchor="middle" font-size="28" font-weight="900" fill="#0b2a7a" opacity="0.9">
+            Cupid Pig • Champagne • Cigarette • Plunger of Love
+          </text>
+        </svg>
+      </div>
+
+      <h1><span>will you be my valentine?</span></h1>
+      <p class="sub">Choose wisely 😇</p>
+
+      <div class="buttons">
+        <button id="yes" type="button">YES</button>
+        <button id="no" type="button" aria-label="No (not allowed)">NO</button>
+      </div>
+
+      <div id="result" class="result">
+        CONGRATULATIONS HONEY! YOU ARE HOGAN'S VALENTINE FOR 2026
+      </div>
+
+      <div class="hint">Tip: the “NO” button is… shy.</div>
+    </section>
+  </main>
+
+  <script>
+    const yes = document.getElementById("yes");
+    const no  = document.getElementById("no");
+    const result = document.getElementById("result");
+    const buttons = document.querySelector(".buttons");
+
+    function centerCursorOnYes() {
+      // Visually “steer” interaction toward YES:
+      yes.classList.add("hovered");
+    }
+
+    function moveNoAway(e) {
+      // Keep NO from being clicked; make it run away within the button container.
+      const rect = buttons.getBoundingClientRect();
+
+      // Prefer moving toward the YES side to satisfy: "When cursor goes over 'no', it automatically moves over to 'yes'."
+      // We do that by relocating NO toward the far edge and nudging focus to YES.
+      const padding = 10;
+      const maxX = rect.width  - no.offsetWidth  - padding;
+      const maxY = rect.height - no.offsetHeight - padding;
+
+      // Random but biased away from current pointer
+      const x = Math.max(padding, Math.min(maxX, Math.random() * maxX));
+      const y = Math.max(padding, Math.min(maxY, Math.random() * maxY));
+
+      no.style.left = x + "px";
+      no.style.top  = y + "px";
+      no.style.right = "auto";
+      no.style.transform = "none";
+
+      // Send attention to YES
+      yes.focus({ preventScroll: true });
+    }
+
+    // Desktop: as soon as you approach NO, it escapes and YES gets focus.
+    no.addEventListener("mouseenter", moveNoAway);
+    no.addEventListener("mousemove", moveNoAway);
+
+    // Mobile/touch: block NO and “redirect” to YES.
+    no.addEventListener("touchstart", (e) => {
+      e.preventDefault();
+      yes.click();
+    }, { passive: false });
+
+    // Prevent keyboard users from selecting NO as well.
+    no.addEventListener("focus", () => {
+      yes.focus({ preventScroll: true });
+      moveNoAway();
+    });
+
+    // YES click reveals the message
+    yes.addEventListener("click", () => {
+      result.style.display = "block";
+      // Optional: hide buttons after success
+      buttons.style.display = "none";
+    });
+
+    // Initial placement so it looks nice
+    // (NO starts on the right; it will run away on hover)
+    no.style.left = "auto";
+    no.style.top = "50%";
+  </script>
+</body>
+</html>
